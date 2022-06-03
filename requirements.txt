@@ -1,0 +1,7 @@
+astropy==4.3.1
+matplotlib
+numpy==1.20.3
+PyYAML
+reproject
+scipy
+spectral-cube==0.6.0
