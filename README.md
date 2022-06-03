@@ -25,7 +25,7 @@ $ pip install -r requirements.txt
 
 
 
-##INPUT FILE:
+## INPUT FILE:
 You can generate plots for a list of coordinates by input a target file. This should be a txt file with the following data format:
 ra,dec,zoom_size,velocity_min,velocity_max
 
