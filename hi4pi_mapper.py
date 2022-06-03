@@ -514,12 +514,13 @@ def parser():
     parser.add_argument("-s", dest="size", type=float, default=2,
                         help="Size of zoom-in maps in degrees.")
     parser.add_argument("-v", dest='vrange', type=float, nargs=2,
+                        default=[-100,100],
                         help="What velocity range to use? E.g., '-v -150 -40' ")
     parser.add_argument('-f', dest='targ_file', type=str,
-                        help="Enter a file containing the above information to plot for multiple targets.")
+                        help="Enter the name of a csv file containing the above information to plot for multiple targets.")
     parser.add_argument('--cubes', dest='identify_cubes', action="store_true",
                         default=False,
-                        help="Enter the name of a csv file containing the above information to plot for multiple targets.")
+                        help="This option prints out the needed data cubes and does not generate any plots.")
 
     args = parser.parse_args()
 
@@ -560,6 +561,7 @@ def main(args):
 
     if args.identify_cubes:
         print('The following data cubes are needed: ')
+        print()
 
     for c, s, v in zip(coords, size, vrange):
 
@@ -576,6 +578,11 @@ def main(args):
 
             fig.savefig(save_file, bbox_inches = 'tight')
 
+    print()
+    if args.identify_cubes:
+        print('Please download the needed data cubes from here: http://cdsarc.u-strasbg.fr/ftp/J/A+A/594/A116/CUBES/EQ2000/')
+        print("Save them in the /hi4pi/ folder located in the same directory as this code.")
+        print()
     print("Finished")
 # ------------------------------------------------------------------------------
 

@@ -12,10 +12,9 @@ optional arguments:
   -c COORDS COORDS  RA and Dec to center plots on. E.g., '-c ra dec'
   -s SIZE           Size of zoom-in maps in degrees.
   -v VRANGE VRANGE  What velocity range to use? E.g., '-v -150 -40'
-  -f TARG_FILE      Enter a file containing the above information to plot for
-                    multiple targets.
-  --cubes           Enter the name of a csv file containing the above
+  -f TARG_FILE      Enter the name of a csv file containing the above
                     information to plot for multiple targets.
+  --cubes           This option prints out the needed data cubes and does not generate any plots.
 
 
 INSTALLING:
@@ -31,3 +30,23 @@ Example for 2 targets:
 20,20,2,-150,-40
 
 An example file "targets.txt" is included.
+
+EXAMPLE:
+Generate a single plot around the coordinate ra=50, dec=50, with velocity bounds (-100, 100):
+$ python hi4pi_mapper.py -c 50 50 -v -100 100
+
+Generate the same plot but with the zoom-in windows having size=3 degrees:
+$ python hi4pi_mapper.py -c 50 50 -v -100 100 -s 3
+
+Generate multiple plots from a target file containing coordinates, zoom-in size, and velocity bounds:
+$ python hi4pi_mapper.py -f targets.txt
+
+Just print out a list of all the data cubes you'll need to download to create the plots you want:
+$ python hi4pi_mapper.py -f targets.txt --cubes
+
+The --cubes command works for all the examples above (i.e., single or multiple plots)
+
+The data cubes should be downloaded from here: http://cdsarc.u-strasbg.fr/ftp/J/A+A/594/A116/CUBES/EQ2000/
+Save them in the /hi4pi/ folder located in the same directory as this code.
+
+Reference: 2016A&A...594A.116H
