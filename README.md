@@ -1,6 +1,7 @@
 # HI4PI Mapper
 A Python tool for creating plots of HI4PI data.
 
+
 Run without any commands for basic usage help:
 
 $ python hi4pi_mapper.py
@@ -17,11 +18,14 @@ optional arguments:
   --cubes           This option prints out the needed data cubes and does not generate any plots.
 
 
-INSTALLING:
+
+## INSTALLING:
 To install requirements for HI4PI Mapper, run the following:
 $ pip install -r requirements.txt
 
-INPUT FILE:
+
+
+##INPUT FILE:
 You can generate plots for a list of coordinates by input a target file. This should be a txt file with the following data format:
 ra,dec,zoom_size,velocity_min,velocity_max
 
@@ -31,7 +35,9 @@ Example for 2 targets:
 
 An example file "targets.txt" is included.
 
-EXAMPLE:
+
+
+## EXAMPLES:
 Generate a single plot around the coordinate ra=50, dec=50, with velocity bounds (-100, 100):
 $ python hi4pi_mapper.py -c 50 50 -v -100 100
 
@@ -48,5 +54,7 @@ The --cubes command works for all the examples above (i.e., single or multiple p
 
 The data cubes should be downloaded from here: http://cdsarc.u-strasbg.fr/ftp/J/A+A/594/A116/CUBES/EQ2000/
 Save them in the /hi4pi/ folder located in the same directory as this code.
+
+
 
 Reference: 2016A&A...594A.116H
