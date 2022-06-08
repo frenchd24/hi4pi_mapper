@@ -15,7 +15,7 @@ optional arguments:\
   -v VRANGE VRANGE  What velocity range to use? E.g., '-v -150 -40'\
   -f TARG_FILE      Enter the name of a csv file containing the above\
                     information to plot for multiple targets.\
-  --cubes           This option prints out the needed data cubes and does not generate any plots.\
+  --cubes           This option prints out the needed data cubes and does not generate any plots.
 
 
 ## INSTALLING:
