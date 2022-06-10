@@ -16,6 +16,7 @@ import os, glob, sys
 import shutil
 import argparse
 import warnings
+import csv
 
 from astropy.io import fits
 from astropy.wcs import WCS
@@ -152,6 +153,21 @@ def plot_maps(coords, size, vrange, settings):
     # --- convert to nearest integer for extracting sub-cube below
     sub_xval = int(sub_source[0])
     sub_yval = int(sub_source[1])
+
+# ------------------------------------------------------------------------------
+    if settings['save_spectrum']:
+        save_name = 'hi4pi_spec_ra_{}_dec_{}_vrange_{}_{}.csv'.format(\
+            str(coords[0]).replace('.','p'), str(coords[1]).replace('.','p'), int(vrange[0]), int(vrange[1]))
+
+        save_file = os.path.join(settings['save_dir'], save_name)
+        fieldnames = ('vlsr', 'spec')
+        output = np.array([vlsr, spec_cen])
+
+        with open(save_file, 'w') as file:
+            writer = csv.writer(file)
+
+            writer.writerow(fieldnames)
+            writer.writerows(output.T)
 
 # ------------------------------------------------------------------------------
     # --- creating the figure
@@ -368,10 +384,21 @@ def plot_maps(coords, size, vrange, settings):
             # --- compute the second moment cube
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
+
+                # --- the Spectral Cube commands for second moment don't work
+                # --- so do it manually
                 disp = cube.moment(order=2)
+                disp = np.sqrt(disp.value)
+
+                if settings['dispersion_type'] == 'sigma':
+                    # disp_map_zoom = sub_cube.linewidth_sigma()
+                    disp_map = disp
+                else:
+                    # disp_map_zoom = sub_cube.linewidth_fwhm()
+                    disp_map = disp * np.sqrt(8 * np.log(2))
 
             # -- show the image
-            im_disp = ax_disp.imshow(np.sqrt(disp.value),
+            im_disp = ax_disp.imshow(disp_map,
                                      origin='lower',
                                      cmap=settings['cm_dispersion'],
                                      aspect=aspect_ratio,
@@ -383,8 +410,12 @@ def plot_maps(coords, size, vrange, settings):
                 ax_disp.scatter(xval, yval, marker='x', color='red')
 
             # --- colorbar
-            plt.colorbar(im_disp, ax=ax_disp, label=r'$\rm <Velocity>\, [km\,s^{-1}]$',
-                         location='right', shrink=cmap_shrink, pad=cmap_pad)
+            if settings['dispersion_type']:
+                plt.colorbar(im_disp, ax=ax_disp, label=r'$\rm <\sigma>\, [km\,s^{-1}]$',
+                             location='right', shrink=cmap_shrink, pad=cmap_pad)
+            else:
+                plt.colorbar(im_disp, ax=ax_disp, label=r'$\rm <FWHM>\, [km\,s^{-1}]$',
+                             location='right', shrink=cmap_shrink, pad=cmap_pad)
 
             # --- convert coordinates and ticks to degrees
             lon=ax_disp.coords[0]
@@ -405,10 +436,22 @@ def plot_maps(coords, size, vrange, settings):
             # --- compute the second moment sub-cube
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
+
+                # --- the Spectral Cube commands for second moment don't work
+                # --- so do it manually
                 disp_zoom = sub_cube.moment(order=2)
+                disp_zoom = np.sqrt(disp_zoom.value)
+
+                if settings['dispersion_type'] == 'sigma':
+                    # disp_map_zoom = sub_cube.linewidth_sigma()
+                    disp_zoom_map = disp_zoom
+                else:
+                    # disp_map_zoom = sub_cube.linewidth_fwhm()
+                    disp_zoom_map = disp_zoom * np.sqrt(8 * np.log(2))
+
 
             # --- show the image
-            im_disp_zoom = ax_disp_zoom.imshow(np.sqrt(disp_zoom.value),
+            im_disp_zoom = ax_disp_zoom.imshow(disp_zoom_map,
                                                origin='lower',
                                                cmap=settings['cm_dispersion_zoom'],
                                                aspect=aspect_ratio)
@@ -418,8 +461,12 @@ def plot_maps(coords, size, vrange, settings):
                 ax_disp_zoom.scatter(sub_xval, sub_yval, marker='x', color='red')
 
             # --- colorbar
-            plt.colorbar(im_disp_zoom, ax=ax_disp_zoom, label=r'$\rm <Velocity>\, [km\,s^{-1}]$',
-                         location='right', shrink=cmap_shrink, pad=cmap_pad)
+            if settings['dispersion_type'] == 'sigma':
+                plt.colorbar(im_disp_zoom, ax=ax_disp_zoom, label=r'$\rm <\sigma>\, [km\,s^{-1}]$',
+                             location='right', shrink=cmap_shrink, pad=cmap_pad)
+            else:
+                plt.colorbar(im_disp_zoom, ax=ax_disp_zoom, label=r'$\rm <FWHM>\, [km\,s^{-1}]$',
+                             location='right', shrink=cmap_shrink, pad=cmap_pad)
 
             # --- convert coordinates and ticks to degrees
             lon=ax_disp_zoom.coords[0]
@@ -521,7 +568,9 @@ def parser():
     parser.add_argument('--cubes', dest='identify_cubes', action="store_true",
                         default=False,
                         help="This option prints out the needed data cubes and does not generate any plots.")
-
+    parser.add_argument('--spec', dest='save_spectrum', action="store_true",
+                        default=False,
+                        help="This option saves the extracted spectrum to file.")
     args = parser.parse_args()
 
     if len(sys.argv) == 1:
@@ -547,6 +596,10 @@ def main(args):
         settings = yaml.safe_load(file)
 
     save_dir = settings['save_dir']
+
+    # --- over-ride the settings file if save_spectrum is specified
+    if args.save_spectrum:
+        settings['save_spectrum'] = True
 
     # --- parse the target file if there is one
     if args.targ_file !=None:
@@ -577,6 +630,7 @@ def main(args):
             save_file = os.path.join(save_dir, save_name)
 
             fig.savefig(save_file, bbox_inches = 'tight')
+
 
     print()
     if args.identify_cubes:
