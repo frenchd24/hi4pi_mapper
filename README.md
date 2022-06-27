@@ -8,7 +8,7 @@ $ python hi4pi_mapper.py\
 usage: hi4pi_mapper.py [-h] [-c COORDS COORDS] [-s SIZE] [-v VRANGE VRANGE]
                        [-f TARG_FILE] [--cubes] [--spec]
 
-optional arguments:
+optional arguments:\
   -h, --help        show this help message and exit\
   -c COORDS COORDS  RA and Dec to center plots on. E.g., '-c ra dec'\
   -s SIZE           Size of zoom-in maps in degrees.\
