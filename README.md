@@ -6,16 +6,18 @@ Run without any commands for basic usage help:
 
 $ python hi4pi_mapper.py\
 usage: hi4pi_mapper.py [-h] [-c COORDS COORDS] [-s SIZE] [-v VRANGE VRANGE]
-                       [-f TARG_FILE] [--cubes]
+                       [-f TARG_FILE] [--cubes] [--spec]
 
-optional arguments:\
-  -h, --help        show this help message and exit\
-  -c COORDS COORDS  RA and Dec to center plots on. E.g., '-c ra dec'\
-  -s SIZE           Size of zoom-in maps in degrees.\
-  -v VRANGE VRANGE  What velocity range to use? E.g., '-v -150 -40'\
-  -f TARG_FILE      Enter the name of a csv file containing the above\
-                    information to plot for multiple targets.\
-  --cubes           This option prints out the needed data cubes and does not generate any plots.
+optional arguments:
+  -h, --help        show this help message and exit
+  -c COORDS COORDS  RA and Dec to center plots on. E.g., '-c ra dec'
+  -s SIZE           Size of zoom-in maps in degrees.
+  -v VRANGE VRANGE  What velocity range to use? E.g., '-v -150 -40'
+  -f TARG_FILE      Enter the name of a csv file containing the above
+                    information to plot for multiple targets.
+  --cubes           This option prints out the needed data cubes and does not
+                    generate any plots.
+  --spec            This option saves the extracted spectrum to file.
 
 
 ## INSTALLING:
