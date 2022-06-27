@@ -155,6 +155,7 @@ def plot_maps(coords, size, vrange, settings):
     sub_yval = int(sub_source[1])
 
 # ------------------------------------------------------------------------------
+    # --- save the spectrum to file
     if settings['save_spectrum']:
         save_name = 'hi4pi_spec_ra_{}_dec_{}_vrange_{}_{}.csv'.format(\
             str(coords[0]).replace('.','p'), str(coords[1]).replace('.','p'), int(vrange[0]), int(vrange[1]))
@@ -411,11 +412,12 @@ def plot_maps(coords, size, vrange, settings):
 
             # --- colorbar
             if settings['dispersion_type']:
-                plt.colorbar(im_disp, ax=ax_disp, label=r'$\rm <\sigma>\, [km\,s^{-1}]$',
-                             location='right', shrink=cmap_shrink, pad=cmap_pad)
+                label = r'$\rm <\sigma>\, [km\,s^{-1}]$'
             else:
-                plt.colorbar(im_disp, ax=ax_disp, label=r'$\rm <FWHM>\, [km\,s^{-1}]$',
-                             location='right', shrink=cmap_shrink, pad=cmap_pad)
+                label = r'$\rm <FWHM>\, [km\,s^{-1}]$'
+
+            plt.colorbar(im_disp, ax=ax_disp, label=label,
+                            location='right', shrink=cmap_shrink, pad=cmap_pad)
 
             # --- convert coordinates and ticks to degrees
             lon=ax_disp.coords[0]
@@ -461,11 +463,12 @@ def plot_maps(coords, size, vrange, settings):
                 ax_disp_zoom.scatter(sub_xval, sub_yval, marker='x', color='red')
 
             # --- colorbar
-            if settings['dispersion_type'] == 'sigma':
-                plt.colorbar(im_disp_zoom, ax=ax_disp_zoom, label=r'$\rm <\sigma>\, [km\,s^{-1}]$',
-                             location='right', shrink=cmap_shrink, pad=cmap_pad)
+            if settings['dispersion_type']:
+                label = r'$\rm <\sigma>\, [km\,s^{-1}]$'
             else:
-                plt.colorbar(im_disp_zoom, ax=ax_disp_zoom, label=r'$\rm <FWHM>\, [km\,s^{-1}]$',
+                label = r'$\rm <FWHM>\, [km\,s^{-1}]$'
+
+            plt.colorbar(im_disp_zoom, ax=ax_disp_zoom, label=label,
                              location='right', shrink=cmap_shrink, pad=cmap_pad)
 
             # --- convert coordinates and ticks to degrees
@@ -595,7 +598,15 @@ def main(args):
     with open(yaml_file) as file:
         settings = yaml.safe_load(file)
 
+    # --- make sure the path works
     save_dir = settings['save_dir']
+    if not os.path.isdir(save_dir):
+        cwd = os.getcwd()
+        save_dir = os.path.join(cwd, save_dir.strip('/'))
+
+        if not os.path.isdir(save_dir):
+            print('Save path does not exist: ',save_dir)
+            sys.exit()
 
     # --- over-ride the settings file if save_spectrum is specified
     if args.save_spectrum:
@@ -603,7 +614,7 @@ def main(args):
 
     # --- parse the target file if there is one
     if args.targ_file !=None:
-        ra, dec, s, vlow, vhigh = np.loadtxt(args.targ_file, unpack=True, delimiter=',', ndmin=2)
+        ra, dec, s, vlow, vhigh = np.loadtxt(args.targ_file, unpack=True, delimiter=',', ndmin=2, comments='#')
         coords = np.array([ra, dec]).T
         vrange = np.array([vlow, vhigh]).T
         size = np.array(s)
@@ -615,12 +626,14 @@ def main(args):
     if args.identify_cubes:
         print('The following data cubes are needed: ')
         print()
+        needed_cubes = []
 
     for c, s, v in zip(coords, size, vrange):
 
         if args.identify_cubes:
             cube = find_hi4pi_fits_name(c)
-            print(cube)
+            # print(cube)
+            needed_cubes.append(cube)
 
         else:
             print('Now creating map for coords={}, size={}, vrange={}'.format(c, s, v))
@@ -631,12 +644,18 @@ def main(args):
 
             fig.savefig(save_file, bbox_inches = 'tight')
 
-
-    print()
     if args.identify_cubes:
-        print('Please download the needed data cubes from here: http://cdsarc.u-strasbg.fr/ftp/J/A+A/594/A116/CUBES/EQ2000/')
-        print("Save them in the /hi4pi/ folder located in the same directory as this code.")
+        needed_cubes = np.array(needed_cubes)
+        needed_cubes_unique, indices = np.unique(needed_cubes,return_index=True)
+        for c in needed_cubes_unique:
+            print(c)
+
         print()
+        if args.identify_cubes:
+            print('Please download the needed data cubes from here: http://cdsarc.u-strasbg.fr/ftp/J/A+A/594/A116/CUBES/EQ2000/')
+            print("Save them in the /hi4pi/ folder located in the same directory as this code.")
+            print()
+
     print("Finished")
 # ------------------------------------------------------------------------------
 
