@@ -8,14 +8,24 @@
 # --- 'spectrum' = extracted 1D spectrum at the given coordinate
 plots_to_make: ['nhi', 'velocity', 'nhi_zoom', 'velocity_zoom', 'dispersion', 'dispersion_zoom', 'spectrum', 'spectrum_zoom']
 
-# directory containing the data cubes
+
+# Directory containing the data cubes
 data_dir: '/hi4pi/'
 
-# directory to save the plots. Default is the current directory
+
+# Directory to save the plots. Default is the current directory
 save_dir: ''
 
 
-# colormaps to use for each plot. 
+# Output and save the spectrum?
+save_spectrum: True
+
+
+# Dispersion map type. Options are 'sigma' or 'fwhm'
+dispersion_type: 'sigma'
+
+
+# Colormaps to use for each plot. 
 # Options can be found here: https://matplotlib.org/stable/gallery/color/colormap_reference.html
 cm_nhi: 'viridis'
 cm_nhi_zoom: 'viridis'
@@ -25,10 +35,11 @@ cm_dispersion: 'RdBu'
 cm_dispersion_zoom: 'RdBu'
 
 
-# include a red 'x' for the target location
+# Include a red 'x' for the target location
 mark_target: True
 
-# plot gridlines
+
+# Plot gridlines
 grid_nhi: True
 grid_nhi_zoom: True
 grid_velocity: True
